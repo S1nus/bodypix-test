@@ -13,9 +13,11 @@
 	</body>
 	<!-- Place your code in the script tag below. You can also use an external .js file -->
 	<script>
+
 		var video = document.querySelector("#videoElement");
 		var canvas = document.querySelector("#mycanvas");
 		var ctx = canvas.getContext("2d");
+
 		if (navigator.mediaDevices.getUserMedia) {
 			navigator.mediaDevices.getUserMedia({ video: true })
 				.then(function (stream) {
@@ -25,22 +27,18 @@
 					console.log("error");
 				});
 		}
+
 		canvas.width = video.width;
 		canvas.height = video.height;
-		setInterval(function() {
-			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-		}, 1);
 		var outputStride = 16;
 		var segmentationThreshold = 0.5;
 
-		var imageElement = video;
-
-		bodyPix.load()
+		const net = bodyPix.load()
 		.then(function(net) {
-			return net.estimatePartSegmentation(imageElement, outputStride, segmentationThreshold);
-		})
-		.then(function(partSegmentation) {
-			console.log(partSegmentation);
+			setInterval( function() {
+				var seg = net.estimatePartSegmentation(video, 16, 0.5);
+				console.log(seg);
+			}, 10);
 		});
 	</script>
 </html>
