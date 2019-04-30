@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<!-- Load TensorFlow.js -->
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0"></script>
+		<!-- Load BodyPix -->
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@1.0.0"></script>
+	</head>
+
+	<body>
+		<video width=500 height=300 autoplay="true" id="videoElement"></video>
+		<br>
+		<canvas id="mycanvas"></canvas>
+	</body>
+	<!-- Place your code in the script tag below. You can also use an external .js file -->
+	<script>
+		var video = document.querySelector("#videoElement");
+		var canvas = document.querySelector("#mycanvas");
+		var ctx = canvas.getContext("2d");
+		if (navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia({ video: true })
+				.then(function (stream) {
+					video.srcObject=stream;
+				})
+				.catch(function (err0r) {
+					console.log("error");
+				});
+		}
+		canvas.width = video.width;
+		canvas.height = video.height;
+		setInterval(function() {
+			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+		}, 1);
+		var outputStride = 16;
+		var segmentationThreshold = 0.5;
+
+		var imageElement = video;
+
+		bodyPix.load()
+		.then(function(net) {
+			return net.estimatePartSegmentation(imageElement, outputStride, segmentationThreshold);
+		})
+		.then(function(partSegmentation) {
+			console.log(partSegmentation);
+		});
+	</script>
+</html>
